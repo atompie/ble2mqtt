@@ -78,7 +78,7 @@ class BleScanner:
                 os.strerror(errnum)
             ))
 
-    def _publish(self, data):
+    def _discover(self, data):
 
         if data:
 
@@ -124,6 +124,7 @@ class BleScanner:
 
             self.ble_devices[mac] = ble
 
+    def _purge(self):
         """
         Removes device if it has not been discovered for some time (self.remove_after_sec).
         Purge is performed every 60 sec.
@@ -163,9 +164,11 @@ class BleScanner:
             try:
 
                 data = self.sock.recv(1024)
-                self._publish(data)
+                self._discover(data)
 
             except socket.timeout:
                 self.logger.info("[TIMEOUT] No BLE device discovered in %s sec" % str(self.timeout))
             except OSError as e:
                 self.logger.info("\033[0;31m[ERR]\033[0m " + str(e))
+
+            self._purge()

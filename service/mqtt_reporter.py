@@ -10,13 +10,13 @@ class MqttReporter:
         self.logger = LoggerWrapper()
 
     def enters(self, ble: dict) -> bool:
-        self.logger.info("ble/scanner_name/ENTERS %s".format(ble))
+        self.logger.info("ble/scanner_name/ENTERS {}".format(ble))
         return True
 
     def leaves(self, ble: dict) -> bool:
-        self.logger.info("ble/scanner_name/LEAVES %s".format(ble))
+        self.logger.info("ble/scanner_name/LEAVES {}".format(ble))
         return True
 
     def stays(self, ble: dict) -> bool:
-        self.logger.info("ble/scanner_name/STAYS %s".format(ble))
+        self.logger.info("ble/scanner_name/STAYS {}".format(ble))
         return True
