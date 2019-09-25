@@ -20,7 +20,7 @@ class MqttReporter:
 
     def _on_cmnd(self, client, userdata, msg):
         print(msg.payload)
-        if str(msg.payload).lower() == 'update':
+        if str(msg.payload).lower() == b'update':
             self.require_update = True
             self._logger.info("{}/CMND {}".format(self._topic, msg.payload))
 
