@@ -135,6 +135,9 @@ class BleScanner:
         """
 
         if self.reporter.require_update:
+
+            self.logger.debug("Update request...")
+
             self.logger.info("\033[0;33m[CMND]\033[0m")
             self.reporter.require_update = False
 
@@ -144,6 +147,8 @@ class BleScanner:
                     mac, ble['rssi'], self.discovery_counter[mac]))
 
         if self._time_passed('for_ble_delete', 30):  # Check if to clear every 30 sec
+
+            self.logger.debug("Purging...")
 
             """
             Removes device after some time if not discovered
