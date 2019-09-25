@@ -7,34 +7,37 @@ class MqttReporter:
 
     def __init__(self, scanner_name: str, server: str, port: int, credentials: tuple, logger: LoggerWrapper):
         user, password = credentials
-        self.logger = logger
-
-        self.mqtt_client = MqttClient(
+        self._logger = logger
+        self._topic = "ble/{}".format(scanner_name)
+        self._mqtt_client = MqttClient(
             server=server, user=user, password=password, port=port,
             logger=logger,
-            subscribe=MqttSubscriber(topic="ble/{}/CMND".format(scanner_name), callback=self._on_cmnd)
+            subscribe=MqttSubscriber(topic="{}/CMND".format(self._topic), callback=self._on_cmnd)
         )
 
-        self.topic = "ble/{}".format(scanner_name)
+        self._scanner_name = scanner_name
+        self.require_update = False
 
     def _on_cmnd(self, client, userdata, msg):
-        print(msg.topic + " " + str(msg.payload))
+        if msg.payload.lower() == 'update':
+            self.require_update = True
+            self._logger.info("{}/CMND {}".format(self._topic, msg.payload))
 
     def enters(self, ble: dict):
-        self.logger.debug("ble/scanner_name/ENTERS {}".format(ble))
-        return self.mqtt_client.publish(
-            topic="{}/ENTERS".format(self.topic),
+        self._logger.debug("{}/ENTERS {}".format(self._topic, ble))
+        return self._mqtt_client.publish(
+            topic="{}/ENTERS".format(self._topic),
             payload=json.dumps(ble))
 
     def leaves(self, ble: dict):
-        self.logger.debug("ble/scanner_name/LEAVES {}".format(ble))
-        return self.mqtt_client.publish(
-            topic="{}/LEAVES".format(self.topic),
+        self._logger.debug("{}/LEAVES {}".format(self._topic, ble))
+        return self._mqtt_client.publish(
+            topic="{}/LEAVES".format(self._topic),
             payload=json.dumps(ble))
 
-    def stays(self, ble: dict):
-        self.logger.debug("ble/scanner_name/STAYS {}".format(ble))
-        return self.mqtt_client.publish(
-            topic="{}/STAYS".format(self.topic),
+    def update(self, ble: dict):
+        self._logger.debug("{}/UPDATE {}".format(self._topic, ble))
+        return self._mqtt_client.publish(
+            topic="{}/UPDATE".format(self._topic),
             payload=json.dumps(ble),
             qos=0)

@@ -19,9 +19,9 @@ from service.logger import LoggerWrapper
 class BleScanner:
 
     def __init__(self, reporter, scanner_name: str, logger: LoggerWrapper, timeout: int = 12,
-                 remove_after_sec: int = 90, throttle_mqtt_stay_publish: int = 60):
+                 remove_after_sec: int = 90, throttle_mqtt_stay_publish: int = 300):
 
-        self.postpone_logging = dict()
+        self.postpone_publish = dict()
         self.time_mark = dict()
         self.remove_after_sec = remove_after_sec
         self.scanner_name = scanner_name
@@ -98,7 +98,8 @@ class BleScanner:
                 'scanner': self.scanner_name,
                 'mac': mac,
                 'rssi': rssi,
-                'timestamp': timestamp
+                'timestamp': timestamp,
+                "counter": self.discovery_counter[mac]
             }
 
             # ble gets removed from ble_devices in collector
@@ -106,6 +107,7 @@ class BleScanner:
 
             if mac not in self.ble_devices:
 
+                self.postpone_publish[mac] = timestamp
                 # Device enters into scanner discovery range
                 self.reporter.enters(ble)
                 self.logger.info("\033[30;43m[ENTERS]\033[0m %s %s / %d" % (
@@ -113,23 +115,31 @@ class BleScanner:
 
             else:
 
-                if mac not in self.postpone_logging:
-                    self.postpone_logging[mac] = timestamp
-                elif self.postpone_logging[mac] + self.throttle_mqtt_stay_publish < timestamp:
-                    self.postpone_logging[mac] = timestamp
+                if mac not in self.postpone_publish:
+                    self.postpone_publish[mac] = timestamp
+                elif self.postpone_publish[mac] + self.throttle_mqtt_stay_publish < timestamp:
+                    self.postpone_publish[mac] = timestamp
                     # Device stays in scanner discovery range
-                    self.reporter.stays(ble)
-                    self.logger.info("\033[0;33m[STAYS]\033[0m %s %s / %d" % (
+                    self.reporter.update(ble)
+                    self.logger.info("\033[0;33m[UPDATE]\033[0m %s %s / %d" % (
                         mac, rssi, self.discovery_counter[mac]))
                     self.discovery_counter[mac] = 0
 
             self.ble_devices[mac] = ble
 
     def _purge(self):
+
         """
         Removes device if it has not been discovered for some time (self.remove_after_sec).
         Purge is performed every 60 sec.
         """
+
+        if self.reporter.require_update:
+
+            self.reporter.require_update = False
+
+            for mac, ble in list(self.ble_devices.items()):
+                self.reporter.update(ble)
 
         if self._time_passed('for_ble_delete', 30):  # Check if to clear every 30 sec
 
@@ -138,12 +148,16 @@ class BleScanner:
             """
 
             for mac, ble in list(self.ble_devices.items()):
+
+                if self.reporter.require_update:
+                    self.reporter.update(ble)
+
                 if ble['timestamp'] + self.remove_after_sec < int(time()):
                     # Device leaves scanner discovery range
                     self.reporter.leaves(ble)
                     del self.ble_devices[mac]
-                    if mac in self.postpone_logging:
-                        del self.postpone_logging[mac]
+                    if mac in self.postpone_publish:
+                        del self.postpone_publish[mac]
                     if mac in self.discovery_counter:
                         del self.discovery_counter[mac]
 
