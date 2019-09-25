@@ -18,7 +18,7 @@ from service.logger import LoggerWrapper
 
 class BleScanner:
 
-    def __init__(self, reporter, scanner_name: str, logger: LoggerWrapper, timeout: int = 12,
+    def __init__(self, reporter, scanner_name: str, logger: LoggerWrapper, timeout: int = 15,
                  remove_after_sec: int = 90, throttle_mqtt_stay_publish: int = 300):
 
         self.postpone_publish = dict()

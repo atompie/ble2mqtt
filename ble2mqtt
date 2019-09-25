@@ -19,6 +19,7 @@ parser.add_argument("--password", help="Password")
 parser.add_argument("--timeout", help="Server timeout in seconds", default=15, type=int)
 parser.add_argument("--log", help="Log to file")
 parser.add_argument("--error-log", help="Log errors to file")
+parser.add_argument('--report', help="Report discovered BLE devices to MQTT in seconds", default=60, type=int)
 
 args = parser.parse_args()
 
@@ -37,7 +38,8 @@ try:
         reporter=mqtt,  # used for immediate reporting of new ble devices
         scanner_name=args.name,
         timeout=args.timeout,
-        logger=logger
+        logger=logger,
+        throttle_mqtt_stay_publish=args.report
     )
     scanner.scan()
 

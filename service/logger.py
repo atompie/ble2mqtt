@@ -7,14 +7,14 @@ class LoggerWrapper:
         if file is not None and os.access(os.path.dirname(file), os.W_OK):
             logging.basicConfig(
                 filename=file,
-                format='%(asctime)s %(message)s', datefmt='[%m/%d/%Y %I:%M:%S %p]'
-                , level=logging.INFO
+                format='%(asctime)s %(message)s', datefmt='[%m/%d/%Y %I:%M:%S %p]',
+                level=logging.DEBUG
 
             )
         else:
             logging.basicConfig(
-                format='%(asctime)s %(message)s', datefmt='[%m/%d/%Y %I:%M:%S %p]'
-                , level=logging.INFO
+                format='%(asctime)s %(message)s', datefmt='[%m/%d/%Y %I:%M:%S %p]',
+                level=logging.DEBUG
             )
 
     def info(self, text):
