@@ -18,7 +18,8 @@ from service.logger import LoggerWrapper
 
 class BleScanner:
 
-    def __init__(self, reporter, scanner_name: str, logger: LoggerWrapper, timeout: int = 12, remove_after_sec: int = 90):
+    def __init__(self, reporter, scanner_name: str, logger: LoggerWrapper, timeout: int = 12,
+                 remove_after_sec: int = 90, throttle_mqtt_stay_publish: int = 60):
 
         self.postpone_logging = dict()
         self.time_mark = dict()
@@ -29,7 +30,7 @@ class BleScanner:
         self.logger = logger
         self.reporter = reporter
         self.discovery_counter = dict()
-        self.trottle_mqtt_stay_publish = 45
+        self.throttle_mqtt_stay_publish = throttle_mqtt_stay_publish
         self.ble_devices = dict()
 
         if not os.geteuid() == 0:
@@ -114,7 +115,7 @@ class BleScanner:
 
                 if mac not in self.postpone_logging:
                     self.postpone_logging[mac] = timestamp
-                elif self.postpone_logging[mac] + self.trottle_mqtt_stay_publish < timestamp:
+                elif self.postpone_logging[mac] + self.throttle_mqtt_stay_publish < timestamp:
                     self.postpone_logging[mac] = timestamp
                     # Device stays in scanner discovery range
                     self.reporter.stays(ble)
@@ -130,7 +131,7 @@ class BleScanner:
         Purge is performed every 60 sec.
         """
 
-        if self._time_passed('for_ble_delete', 60):  # Check if to clear every 60 sec
+        if self._time_passed('for_ble_delete', 30):  # Check if to clear every 30 sec
 
             """
             Removes device after some time if not discovered

@@ -22,12 +22,19 @@ class MqttReporter:
 
     def enters(self, ble: dict):
         self.logger.debug("ble/scanner_name/ENTERS {}".format(ble))
-        return self.mqtt_client.publish(topic="{}/ENTERS".format(self.topic), payload=json.dumps(ble))
+        return self.mqtt_client.publish(
+            topic="{}/ENTERS".format(self.topic),
+            payload=json.dumps(ble))
 
     def leaves(self, ble: dict):
         self.logger.debug("ble/scanner_name/LEAVES {}".format(ble))
-        return self.mqtt_client.publish(topic="{}/LEAVES".format(self.topic), payload=json.dumps(ble))
+        return self.mqtt_client.publish(
+            topic="{}/LEAVES".format(self.topic),
+            payload=json.dumps(ble))
 
     def stays(self, ble: dict):
         self.logger.debug("ble/scanner_name/STAYS {}".format(ble))
-        return self.mqtt_client.publish(topic="{}/STAYS".format(self.topic), payload=json.dumps(ble))
+        return self.mqtt_client.publish(
+            topic="{}/STAYS".format(self.topic),
+            payload=json.dumps(ble),
+            qos=0)

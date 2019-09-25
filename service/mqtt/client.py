@@ -17,7 +17,6 @@ class MqttClient:
 
         client = mqtt_client.Client("ble2mqtt")
         client.on_connect = self._on_connect
-        client.on_publish = self._on_publish
         client.on_disconnect = self._on_disconnect
         if subscribe:
             client.on_message = subscribe.callback
@@ -37,7 +36,7 @@ class MqttClient:
         self.client = client
 
     def publish(self, topic, payload, qos=2):
-        print(self.client.publish(topic, payload, qos))
+        self.client.publish(topic, payload, qos)
 
     def subscribe(self, topic, callback, qos=2):
         self.client.on_message = callback
@@ -56,7 +55,3 @@ class MqttClient:
 
     def _on_disconnect(self, client, userdata, rc):
         self.logger.info("Client disconnected")
-
-    def _on_publish(self, client, userdata, result):
-        self.logger.info("Data published with id {}".format(result))
-
