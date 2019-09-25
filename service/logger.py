@@ -8,13 +8,13 @@ class LoggerWrapper:
             logging.basicConfig(
                 filename=file,
                 format='%(asctime)s %(message)s', datefmt='[%m/%d/%Y %I:%M:%S %p]'
-                , level=logging.DEBUG
+                , level=logging.INFO
 
             )
         else:
             logging.basicConfig(
                 format='%(asctime)s %(message)s', datefmt='[%m/%d/%Y %I:%M:%S %p]'
-                , level=logging.DEBUG
+                , level=logging.INFO
             )
 
     def info(self, text):

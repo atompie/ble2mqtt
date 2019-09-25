@@ -170,6 +170,6 @@ class BleScanner:
             except socket.timeout:
                 self.logger.info("[TIMEOUT] No BLE device discovered in %s sec" % str(self.timeout))
             except OSError as e:
-                self.logger.info("\033[0;31m[ERR]\033[0m " + str(e))
+                print("\033[0;31m[ERR]\033[0m " + str(e))
 
             self._purge()
