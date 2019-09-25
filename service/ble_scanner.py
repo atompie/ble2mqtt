@@ -81,51 +81,55 @@ class BleScanner:
 
     def _discover(self, data):
 
-        if data:
+        if not data:
+            self.logger.warning("No data...")
+            return
 
-            # print bluetooth address from LE Advert. packet
-            mac = ':'.join("{0:02x}".format(x) for x in data[12:6:-1])
-            unsigned = data[-1]
-            rssi = unsigned - 256 if unsigned > 127 else unsigned
-            timestamp = int(time())
+        # print bluetooth address from LE Advert. packet
+        mac = ':'.join("{0:02x}".format(x) for x in data[12:6:-1])
+        unsigned = data[-1]
+        rssi = unsigned - 256 if unsigned > 127 else unsigned
+        timestamp = int(time())
 
-            if mac not in self.discovery_counter:
+        if mac not in self.discovery_counter:
+            self.discovery_counter[mac] = 0
+        else:
+            self.discovery_counter[mac] += 1
+
+        ble = {
+            'scanner': self.scanner_name,
+            'mac': mac,
+            'rssi': rssi,
+            'timestamp': timestamp,
+            "counter": self.discovery_counter[mac]
+        }
+
+        # ble gets removed from ble_devices in collector
+        # every 5 minutes if not discovered
+
+        if mac not in self.ble_devices:
+
+            self.postpone_publish[mac] = timestamp
+            # Device enters into scanner discovery range
+            self.reporter.enters(ble)
+            self.logger.info("\033[30;43m[ENTERS]\033[0m %s %s / %d" % (
+                mac, rssi, self.discovery_counter[mac]))
+
+        else:
+
+            if mac not in self.postpone_publish:
+                self.postpone_publish[mac] = timestamp
+            elif self.postpone_publish[mac] + self.throttle_mqtt_stay_publish < timestamp:
+                self.postpone_publish[mac] = timestamp
+                # Device stays in scanner discovery range
+                self.reporter.update(ble)
+                self.logger.info("\033[0;33m[UPDATE]\033[0m %s %s / %d" % (
+                    mac, rssi, self.discovery_counter[mac]))
                 self.discovery_counter[mac] = 0
             else:
-                self.discovery_counter[mac] += 1
+                self.logger.debug("Found {}".format(mac))
 
-            ble = {
-                'scanner': self.scanner_name,
-                'mac': mac,
-                'rssi': rssi,
-                'timestamp': timestamp,
-                "counter": self.discovery_counter[mac]
-            }
-
-            # ble gets removed from ble_devices in collector
-            # every 5 minutes if not discovered
-
-            if mac not in self.ble_devices:
-
-                self.postpone_publish[mac] = timestamp
-                # Device enters into scanner discovery range
-                self.reporter.enters(ble)
-                self.logger.info("\033[30;43m[ENTERS]\033[0m %s %s / %d" % (
-                    mac, rssi, self.discovery_counter[mac]))
-
-            else:
-
-                if mac not in self.postpone_publish:
-                    self.postpone_publish[mac] = timestamp
-                elif self.postpone_publish[mac] + self.throttle_mqtt_stay_publish < timestamp:
-                    self.postpone_publish[mac] = timestamp
-                    # Device stays in scanner discovery range
-                    self.reporter.update(ble)
-                    self.logger.info("\033[0;33m[UPDATE]\033[0m %s %s / %d" % (
-                        mac, rssi, self.discovery_counter[mac]))
-                    self.discovery_counter[mac] = 0
-
-            self.ble_devices[mac] = ble
+        self.ble_devices[mac] = ble
 
     def _purge(self):
 
