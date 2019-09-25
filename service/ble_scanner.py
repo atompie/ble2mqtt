@@ -135,11 +135,13 @@ class BleScanner:
         """
 
         if self.reporter.require_update:
-
+            self.logger.info("\033[0;33m[CMND]\033[0m")
             self.reporter.require_update = False
 
             for mac, ble in list(self.ble_devices.items()):
                 self.reporter.update(ble)
+                self.logger.info("\033[0;33m[CMND-UPDATE]\033[0m %s %s / %d" % (
+                    mac, ble['rssi'], self.discovery_counter[mac]))
 
         if self._time_passed('for_ble_delete', 30):  # Check if to clear every 30 sec
 
