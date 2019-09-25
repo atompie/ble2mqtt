@@ -174,6 +174,9 @@ class BleScanner:
 
                     self.logger.info("\033[0;31m[LEAVES]\033[0m %s removed from BLE devices" % mac)
 
+        else:
+            self.logger.debug("Purging skipped...")
+
     def _time_passed(self, name, delay):
         now = int(time())
         if name not in self.time_mark:
