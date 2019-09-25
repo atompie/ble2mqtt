@@ -1,0 +1,15 @@
+# install new version of bluetooth
+ # FOR ubunut
+    sudo apt-get install -y libudev-dev libical-dev libreadline6-dev libdbus-1-dev libglib2.0-dev
+ # FOR rasberry pi
+    sudo apt-get install -y libusb-dev libdbus-1-dev libglib2.0-dev libudev-dev libical-dev libreadline-dev
+
+wget http://www.kernel.org/pub/linux/bluetooth/bluez-5.49.tar.xz
+tar xvf bluez-5.49.tar.xz
+./configure
+make
+sudo make install
+
+sudo systemctl unmask bluetooth
+sudo systemctl enable bluetooth
+sudo systemctl start bluetooth

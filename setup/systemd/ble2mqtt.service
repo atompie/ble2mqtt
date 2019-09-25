@@ -1,0 +1,10 @@
+[Unit]
+Description=ble2mqtt
+After=network.target  bluetooth.service
+
+[Service]
+Environment=PATH=/usr/bin:/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin
+ExecStart=/usr/bin/python3 /opt/ble2mqtt/main.py --server 192.168.1.123 --name Garage
+
+[Install]
+WantedBy=multi-user.target
