@@ -3,7 +3,7 @@
 from service.ble_scanner import BleScanner
 import argparse
 from service.logger import LoggerWrapper
-from service.mqtt_reporter import MqttReporter
+from service.mqtt.reporter import MqttReporter
 
 """
     Scans for new BLE devices. Reports it to server immediately if new devices is discovered
@@ -22,8 +22,13 @@ parser.add_argument("--error-log", help="Log errors to file")
 
 args = parser.parse_args()
 
-mqtt = MqttReporter(server=args.server, port=args.port, credentials=(args.user, args.password))
 logger = LoggerWrapper(file=args.log)
+
+mqtt = MqttReporter(
+    scanner_name=args.name,
+    server=args.server, port=args.port, credentials=(args.user, args.password),
+    logger=logger
+)
 
 # Scans bluetooth for ble devices
 
@@ -31,12 +36,13 @@ try:
     scanner = BleScanner(
         reporter=mqtt,  # used for immediate reporting of new ble devices
         scanner_name=args.name,
-        timeout=args.timeout
+        timeout=args.timeout,
+        logger=logger
     )
     scanner.scan()
 
 except (KeyboardInterrupt, SystemExit):
-    logger.warning("Waiting for scanner shutdown")
+    logger.warning("Shutdown")
 
 except Exception as e:
     logger.error("[ERR] %s" % e)
