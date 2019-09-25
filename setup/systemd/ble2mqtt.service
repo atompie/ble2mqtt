@@ -4,7 +4,7 @@ After=network.target  bluetooth.service
 
 [Service]
 Environment=PATH=/usr/bin:/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin
-ExecStart=/usr/bin/python3 /opt/ble2mqtt/main.py --server 192.168.1.123 --name <set_name> --user <set_user> --password <set_password> --log /var/log/ble2mqtt.log --error-log /var/log/ble2mqtt-error.log
+ExecStart=/usr/bin/python3 /opt/ble2mqtt/ble2mqtt --server 192.168.1.123 --name <set_name> --user <set_user> --password <set_password> --log /var/log/ble2mqtt.log --error-log /var/log/ble2mqtt-error.log
 
 [Install]
 WantedBy=multi-user.target

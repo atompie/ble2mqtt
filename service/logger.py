@@ -4,7 +4,7 @@ import logging, os
 class LoggerWrapper:
 
     def __init__(self, file=None):
-        if file is not None and os.access(file, os.W_OK):
+        if file is not None and os.access(os.path.dirname(file), os.W_OK):
             logging.basicConfig(
                 filename=file,
                 format='%(asctime)s %(message)s', datefmt='[%m/%d/%Y %I:%M:%S %p]'
