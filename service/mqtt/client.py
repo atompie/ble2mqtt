@@ -14,12 +14,11 @@ class MqttClient:
     def __init__(self, server, user, logger, port=1883, password=None, subscribe: MqttSubscriber = None):
 
         self.logger = logger
+        self.subscribe = subscribe
 
         client = mqtt_client.Client("ble2mqtt")
         client.on_connect = self._on_connect
         client.on_disconnect = self._on_disconnect
-        if subscribe:
-            client.on_message = subscribe.callback
 
         client.loop_start()
         client.connected_flag = False
@@ -29,9 +28,6 @@ class MqttClient:
         while not client.connected_flag:
             self.logger.info('Waiting for connection...')
             time.sleep(1)
-
-        if subscribe:
-            client.subscribe(subscribe.topic, subscribe.qos)
 
         self.client = client
 
@@ -50,6 +46,10 @@ class MqttClient:
         self.client.disconnect()
 
     def _on_connect(self, client, userdata, flags, rc):
+        if self.subscribe:
+            client.on_message = self.subscribe.callback
+            client.subscribe(self.subscribe.topic, self.subscribe.qos)
+
         self.logger.info("Connected with result code {}".format(rc))
         client.connected_flag = True
 
