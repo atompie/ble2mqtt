@@ -6,7 +6,7 @@ It scans bluetooth devices and sends data about the appearance of a bluetooth de
 
 I used this solution to report the presence of household members. It works great with the node-red server.
 
-Show me that you like this project and star it ande enjoy. 
+Show me that you like this project and star it and enjoy. 
 
 # ble2mqtt
 
