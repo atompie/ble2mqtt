@@ -1,6 +1,6 @@
 # Welcome
 
-I just shared a library to scan Bluetooth Low Engine devices for Smart Home fans.
+I just released a library to scan Bluetooth Low Engine devices for Smart Home fans.
 
 It scans bluetooth devices and sends data about the appearance of a bluetooth device to the defined MQTT server. The software works great on the Raspberry Pi so you can get a few bluetooth scanners.
 
