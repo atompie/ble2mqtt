@@ -1,3 +1,13 @@
+# Welcome
+
+I just shared a library to scan Bluetooth Low Engine devices for Smart Home fans.
+
+It scans bluetooth devices and sends data about the appearance of a bluetooth device to the defined MQTT server. The software works great on the Raspberry Pi so you can get a few bluetooth scanners.
+
+I used this solution to report the presence of household members. It works great with the node-red server.
+
+Enjoy. 
+
 # ble2mqtt
 
 Ble2mqtt service is a simple BLE scanner that publishes information to mqtt server when new BLE device enters or leaves the scanner discovery range.
