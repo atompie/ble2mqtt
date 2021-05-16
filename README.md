@@ -37,7 +37,7 @@ sudo make install
 
 ## Service installation 
 
-Service installation depends on the system tyoe you are installting the service. 
+Service installation depends on the system type you are installting the service. 
 If you are running rasberry PI please edit file in init.d/ble2mqtt. Find line with <set_name>, <set_server>
 and fill it with your settings.
 
@@ -53,7 +53,7 @@ Do the same for Ubuntu installation but in file systemd/ble2mqtt.service
     
 ## Test manually
 
-    sudo ble2mqtt --server 192.168.1.123 --name Livingroom
+    sudo ble2mqtt --server 192.168.1.100 --name Livingroom
     
 ## Start service
 
